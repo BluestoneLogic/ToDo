@@ -4,7 +4,7 @@ import { taskList } from "./tasks";
 // material components
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Checkbox, Dialog } from "@mui/material";
-//POSSIBLY MODULE FOR FORM VALIDATION
+//IMPORT MODULE FOR FORM VALIDATION
 
 export const ToDoList = () => {
 	// initial values and functions for react state variables
