@@ -4,6 +4,7 @@ import { taskList } from "./tasks";
 // material components
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Checkbox, Dialog } from "@mui/material";
+//POSSIBLY MODULE FOR FORM VALIDATION
 
 export const ToDoList = () => {
 	// initial values and functions for react state variables
@@ -71,7 +72,10 @@ export const ToDoList = () => {
 	 * INSTRUCTIONS: use the js filter method to set the selection as an array of tasks
 	 */
 	const handleSelection = (ids) => {
-		// your code here
+		//Sets selection array to the tasks included in the ids array
+		setSelection(tasks.filter(task =>
+			ids.includes(task.id)
+		))
 	};
 
 	/**
@@ -80,7 +84,14 @@ export const ToDoList = () => {
 	 * clicking the submit button
 	 */
 	const handleSubmit = () => {
-		// your code here
+		if (mode === "EDIT") {
+			updateTask();
+			closeDialog();
+
+		} else {
+			createTask()
+			closeDialog();
+		}
 	};
 
 	/**
@@ -89,7 +100,17 @@ export const ToDoList = () => {
 	 * and add it with the setTasks hook
 	 */
 	const createTask = () => {
-		// your code here
+		//If the description exists 
+		if (description.trim().length > 0) {
+			//Create task and add it to the task array 
+			setTasks([...tasks, {
+				id: tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1,
+				description: description,
+				complete: false
+			}])
+			//Set Description to initial state
+			setDescription("")
+		}
 	};
 
 	/**
@@ -98,7 +119,16 @@ export const ToDoList = () => {
 	 * with a js map to create a new task array
 	 */
 	const updateTask = () => {
-		// your code here
+		setTasks(tasks.map(task => {
+			//Find selected task in Tasks Array. Check if description exists.
+			if (task.id === selection[0].id && description.trim().length > 0) {
+				//Update task with description 
+				task.description = description
+				//reset Description to initial state
+				setDescription("")
+			}
+			return task;
+		}))
 	};
 
 	/**
@@ -107,7 +137,15 @@ export const ToDoList = () => {
 	 * with a js filter to create a new task array
 	 */
 	const removeTask = () => {
-		// your code here
+		//Check if task is selected 
+		if (selection.length > 0) {
+			//Remove selected task from tasks array 
+			setTasks(tasks.filter(task =>
+				task.id !== selection[0].id
+			))
+			//Reset Selection to initial state
+			setSelection([])
+		}
 	};
 
 	/**
@@ -116,8 +154,14 @@ export const ToDoList = () => {
 	 * INSTRUCTIONS: use the setTasks hook with a js map to create a new task array
 	 */
 	const completeTask = (id) => {
-		// your code here
-	};
+		//Find task using id and updates its 'complete' property
+		setTasks(tasks.map(task => {
+			if (task.id === id) {
+				task.complete = !task.complete
+			}
+			return task;
+		}))
+	}
 
 	// the Data grid columns - the renderCell will replace a cell's text with a React component - in this case a checkbox
 	const columns = [
@@ -127,12 +171,15 @@ export const ToDoList = () => {
 			headerName: "Complete",
 			flex: 0.3,
 			renderCell: (params) => (
-				<Checkbox checked={params.value} onChange={() => completeTask(params.id)} />
+				<div>
+					<Checkbox checked={params.value} onChange={() => completeTask(params.id)} />
+				</div>
 			),
 		},
 	];
 
 	return (
+
 		<div>
 			<h1>To Do List</h1>
 			{/* Dialog for adding and editing */}
